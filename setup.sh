@@ -11,7 +11,17 @@ info(){ echo -e "${CYAN}●${RESET} $*"; }
 warn(){ echo -e "${YELLOW}⚠${RESET} $*"; }
 
 BAR_W=28
-progress(){ local cur=$1 tot=4 msg="$2" pct=$((cur*100/tot)) filled=$((cur*BAR_W/tot)) empty=$((BAR_W-filled)); bar="$(printf '█%.0s' $(seq 1 $filled 2>/dev/null) 2>/dev/null)$(printf '░%.0s' $(seq 1 $empty 2>/dev/null) 2>/dev/null)"; printf "\r${DIM}[%s] %d%% %s${RESET}   \n" "$bar" "$pct" "$msg"; }
+progress(){
+  local cur="$1"; local tot=4; local msg="$2"
+  # guard division by zero (Termux bash edge)
+  if [ -z "$tot" ] || [ "$tot" -eq 0 ]; then tot=4; fi
+  if [ -z "$cur" ]; then cur=0; fi
+  local pct=$((cur*100/tot))
+  local filled=$((cur*BAR_W/tot))
+  local empty=$((BAR_W-filled))
+  local bar="$(printf '█%.0s' $(seq 1 $filled 2>/dev/null) 2>/dev/null)$(printf '░%.0s' $(seq 1 $empty 2>/dev/null) 2>/dev/null)"
+  printf "\r${DIM}[%s] %d%% %s${RESET}   \n" "$bar" "$pct" "$msg"
+}
 
 cat <<'BANNER'
  ███╗   NEKOLIB ONE-TAP (phone me-only)
